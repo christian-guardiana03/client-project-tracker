@@ -130,7 +130,6 @@ Sorting, authentication, and deployment were left out. The spec explicitly marks
 
 ## Assumptions Made
 
-- No authentication is required — the spec doesn't ask for user accounts or login, so the app is open access, matching the "optional bonus" note on authentication.
 - A project's `description` field is optional; every other field (client name, project name, status, priority, start date, due date) is required.
 - Dates are stored and compared as calendar dates only (no time-of-day component), since the spec only asks for Start Date and Due Date, not scheduling down to the hour.
 - "Due Date cannot be earlier than Start Date" allows the two dates to be equal (a same-day project is valid) — I read the requirement as a minimum-bound check rather than requiring a strict gap between the two.
@@ -145,8 +144,6 @@ For the scope of this assessment — yes, comfortably. Some specific reasons:
 - **Validation logic is centralized** in Form Requests, so adding a new field or rule later means editing one file, not hunting through the controller.
 - **The frontend's API layer is centralized** in `api/projects.js`, so if this API grows (auth headers, pagination, new endpoints), there's one place to extend rather than every component making its own `axios` calls.
 - **The Docker services are independent**, meaning the database, backend, or frontend could each be scaled, redeployed, or swapped without touching the others — this mirrors how a real production setup would be structured (e.g., running multiple backend replicas behind a load balancer while keeping one database).
-
-Where it would need to evolve for a larger real-world version: pagination on the projects list (currently returns everything at once, fine for dozens of projects, not for thousands), moving business logic out of the controller into a dedicated service layer if more complex rules get added later, and adding tests before the codebase grows past what one person can hold in their head.
 
 ---
 
