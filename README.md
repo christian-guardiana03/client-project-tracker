@@ -1,6 +1,6 @@
 # Client Project Tracker
 
-A simple full-stack CRUD application built for a technical assessment. It lets a project manager at a digital agency track client projects — creating, viewing, updating, and deleting them, with validation and clear error handling throughout.
+A simple full-stack CRUD application built for a technical assessment. It lets a project manager at a digital agency track client, creating, viewing, updating, and deleting them, with validation and clear error handling throughout.
 
 ## Tech Stack
 
@@ -15,7 +15,7 @@ I went with Laravel + React because it's the stack I'm most comfortable building
 
 - Laravel's **Form Requests** give me validation, error formatting, and authorization in one place, without writing custom validation logic by hand.
 - Laravel's **route-model binding** (`Project $project` right in the controller method) automatically returns a 404 for a bad ID, which the spec asks for ("invalid requests should return meaningful errors") basically for free.
-- React with plain **component state** (no Redux/Context) was enough for an app this size — three components and one shared list of projects don't need a state management library. Adding one would've been over-engineering for the scope.
+- React with plain **component state** (no Redux/Context) was enough for an app this size, three components and one shared list of projects don't need a state management library. Adding one would've been over-engineering for the scope.
 
 ---
 
@@ -43,14 +43,14 @@ client-project-tracker/
 └── README.md
 ```
 
-**Why organized this way:** the backend and frontend are fully separate folders with their own Dockerfiles, so they can be built, deployed, or even swapped independently — that's how this would actually be split up on a real team (a backend dev and a frontend dev could work on this without stepping on each other). Inside the backend, validation lives in Form Request classes rather than inline in the controller, which keeps `ProjectController` focused purely on orchestration (fetch, save, respond) rather than mixing in validation rules. On the frontend, all API calls go through a single `api/projects.js` file rather than being scattered across components — if the API's base URL or shape ever changes, there's exactly one place to update.
+**Why organized this way:** the backend and frontend are fully separate folders with their own Dockerfiles, so they can be built, deployed, or even swapped independently, that's how this would actually be split up on a real team (a backend dev and a frontend dev could work on this without stepping on each other). Inside the backend, validation lives in Form Request classes rather than inline in the controller, which keeps `ProjectController` focused purely on orchestration (fetch, save, respond) rather than mixing in validation rules. On the frontend, all API calls go through a single `api/projects.js` file rather than being scattered across components, if the API's base URL or shape ever changes, there's exactly one place to update.
 
 ---
 
 ## Setup Instructions
 
 ### Prerequisites
-- Docker Desktop installed and running. That's the only requirement — everything else (PHP, Node, MySQL) runs inside the containers.
+- Docker Desktop installed and running. That's the only requirement needed, everything else (PHP, Node, MySQL) runs inside the containers.
 
 ### Setup
 
@@ -86,7 +86,7 @@ client-project-tracker/
 Once the containers are running:
 
 1. Go to `http://localhost:5173`.
-2. Click **+ New Project** to create one — fill in client name, project name, description, status, priority, and dates.
+2. Click **+ New Project** to create one, fill in client name, project name, description, status, priority, and dates.
 3. Existing projects appear in the table below the form.
 4. Click **Edit** on any row to update that project, or **Delete** to remove it.
 5. Validation errors (e.g., missing required fields, due date before start date) show up directly under the relevant field.
@@ -120,30 +120,24 @@ docker compose exec backend php artisan test
 - **Filtering** by Status and by Priority, combinable with each other and with search
 - **Automated tests** (PHPUnit) covering listing, creation, validation rules (required fields, valid enum values, due-date-after-start-date), updating, deleting, 404 handling, and the new search/filter endpoints
 
-### Bonus items implemented
-Search, Filtering, and Unit Tests were added on top of the core requirements.
-
-### Not implemented (bonus items I chose to skip)
-Sorting, authentication, and deployment were left out. The spec explicitly marks these as optional bonus items that won't hurt the score if omitted, and I prioritized my remaining time on the items above instead.
-
 ---
 
 ## Assumptions Made
 
 - A project's `description` field is optional; every other field (client name, project name, status, priority, start date, due date) is required.
 - Dates are stored and compared as calendar dates only (no time-of-day component), since the spec only asks for Start Date and Due Date, not scheduling down to the hour.
-- "Due Date cannot be earlier than Start Date" allows the two dates to be equal (a same-day project is valid) — I read the requirement as a minimum-bound check rather than requiring a strict gap between the two.
-- The `GET /projects/:id` endpoint is implemented per the spec, even though the current UI primarily works off the full list — it's there to support features like a detail view if needed later.
+- "Due Date cannot be earlier than Start Date" allows the two dates to be equal (a same-day project is valid). I read the requirement as a minimum-bound check rather than requiring a strict gap between the two.
+- The `GET /projects/:id` endpoint is implemented per the spec, even though the current UI primarily works off the full list, it's there to support features like a detail view if needed later.
 
 ---
 
 ## Is this scalable and maintainable?
 
-For the scope of this assessment — yes, comfortably. Some specific reasons:
+For the scope of this assessment, Yes, comfortably. Some specific reasons:
 
 - **Validation logic is centralized** in Form Requests, so adding a new field or rule later means editing one file, not hunting through the controller.
 - **The frontend's API layer is centralized** in `api/projects.js`, so if this API grows (auth headers, pagination, new endpoints), there's one place to extend rather than every component making its own `axios` calls.
-- **The Docker services are independent**, meaning the database, backend, or frontend could each be scaled, redeployed, or swapped without touching the others — this mirrors how a real production setup would be structured (e.g., running multiple backend replicas behind a load balancer while keeping one database).
+- **The Docker services are independent**, meaning the database, backend, or frontend could each be scaled, redeployed, or swapped without touching the others, this mirrors how a real production setup would be structured.
 
 ---
 
